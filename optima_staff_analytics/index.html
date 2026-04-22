@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Optima Staff Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand-block">
+        <div class="brand-icon">O</div>
+        <div>
+          <h1>Optima Staff</h1>
+          <p>Мониторинг и аналитика</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-link active" data-section="dashboardSection">Панель</button>
+        <button class="nav-link" data-section="employeesSection">Сотрудники</button>
+        <button class="nav-link" data-section="attendanceSection">Посещение</button>
+        <button class="nav-link" data-section="analyticsSection">Аналитика</button>
+        <button class="nav-link" data-section="reportsSection">Отчёты</button>
+        <button class="nav-link" data-section="settingsSection">Настройки</button>
+      </nav>
+
+      <div class="sidebar-footer glass-card">
+        <div class="status-dot"></div>
+        <div>
+          <strong>Система активна</strong>
+          <p>Локальный режим GitHub Pages</p>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <h2 id="pageTitle">Панель управления</h2>
+          <p id="liveDate">Загрузка даты...</p>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="search-box">
+            <input type="text" id="globalSearch" placeholder="Поиск сотрудника, отдела или филиала..." />
+          </div>
+          <button class="primary-btn" id="quickAddEmployeeBtn">+ Новый сотрудник</button>
+        </div>
+      </header>
+
+      <section id="dashboardSection" class="page-section active">
+        <div class="metrics-grid" id="metricsGrid"></div>
+
+        <div class="two-column-grid">
+          <article class="card chart-card">
+            <div class="card-header">
+              <div>
+                <h3>Динамика рабочего времени</h3>
+                <p>Последние 7 дней по всем сотрудникам</p>
+              </div>
+            </div>
+            <canvas id="hoursChart" width="900" height="320"></canvas>
+          </article>
+
+          <article class="card chart-card">
+            <div class="card-header">
+              <div>
+                <h3>Статусы за сегодня</h3>
+                <p>Присутствие, опоздания, больничные</p>
+              </div>
+            </div>
+            <div class="status-stats" id="statusStats"></div>
+          </article>
+        </div>
+
+        <div class="two-column-grid lower-grid">
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <h3>Последние события</h3>
+                <p>Новые отметки входа и выхода</p>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Сотрудник</th>
+                    <th>Дата</th>
+                    <th>Вход</th>
+                    <th>Выход</th>
+                    <th>Статус</th>
+                    <th>Часы</th>
+                  </tr>
+                </thead>
+                <tbody id="recentLogsTable"></tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <h3>Отделы и эффективность</h3>
+                <p>Среднее время и доля посещаемости</p>
+              </div>
+            </div>
+            <div id="departmentPerformance" class="stack-list"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="employeesSection" class="page-section">
+        <div class="section-toolbar">
+          <div class="filters-row">
+            <select id="departmentFilter">
+              <option value="all">Все отделы</option>
+            </select>
+            <select id="statusFilter">
+              <option value="all">Все статусы</option>
+              <option value="Active">Активен</option>
+              <option value="Vacation">Отпуск</option>
+              <option value="Remote">Удалённо</option>
+              <option value="Suspended">Приостановлен</option>
+            </select>
+          </div>
+          <button class="secondary-btn" id="seedDemoBtn">Загрузить демо-данные</button>
+        </div>
+
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <h3>Список сотрудников</h3>
+              <p>Управление персоналом банка</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Сотрудник</th>
+                  <th>Должность</th>
+                  <th>Отдел</th>
+                  <th>Филиал</th>
+                  <th>График</th>
+                  <th>Статус</th>
+                  <th>Действия</th>
+                </tr>
+              </thead>
+              <tbody id="employeesTable"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section id="attendanceSection" class="page-section">
+        <div class="section-toolbar">
+          <div class="filters-row">
+            <input type="date" id="attendanceDateFilter" />
+            <select id="attendanceEmployeeFilter">
+              <option value="all">Все сотрудники</option>
+            </select>
+          </div>
+          <button class="primary-btn" id="openAttendanceModalBtn">+ Добавить отметку</button>
+        </div>
+
+        <div class="two-column-grid">
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <h3>Журнал посещаемости</h3>
+                <p>Вход, выход, перерыв и итог часов</p>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Сотрудник</th>
+                    <th>Дата</th>
+                    <th>Вход</th>
+                    <th>Выход</th>
+                    <th>Перерыв</th>
+                    <th>Статус</th>
+                    <th>Часы</th>
+                    <th>Примечание</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="attendanceTable"></tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <h3>Итоги дня</h3>
+                <p>Сводка по выбранной дате</p>
+              </div>
+            </div>
+            <div class="summary-panel" id="dailySummary"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="analyticsSection" class="page-section">
+        <div class="section-toolbar">
+          <div class="filters-row">
+            <input type="date" id="analyticsStartDate" />
+            <input type="date" id="analyticsEndDate" />
+          </div>
+          <button class="secondary-btn" id="applyAnalyticsBtn">Применить период</button>
+        </div>
+
+        <div class="analytics-grid">
+          <article class="card chart-card wide-card">
+            <div class="card-header">
+              <div>
+                <h3>Отработанные часы по дням</h3>
+                <p>Суммарная нагрузка за выбранный период</p>
+              </div>
+            </div>
+            <canvas id="analyticsChart" width="1200" height="350"></canvas>
+          </article>
+
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <h3>Топ сотрудников</h3>
+                <p>По общему количеству часов</p>
+              </div>
+            </div>
+            <div id="topEmployeesList" class="stack-list"></div>
+          </article>
+
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <h3>Топ филиалов</h3>
+                <p>По дисциплине посещения</p>
+              </div>
+            </div>
+            <div id="topBranchesList" class="stack-list"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="reportsSection" class="page-section">
+        <div class="section-toolbar">
+          <div class="filters-row">
+            <input type="month" id="reportMonth" />
+          </div>
+          <div class="filters-row">
+            <button class="primary-btn" id="generateMonthlyReportBtn">Сформировать отчёт</button>
+            <button class="secondary-btn" id="exportEmployeesBtn">Экспорт сотрудников CSV</button>
+            <button class="secondary-btn" id="exportAttendanceBtn">Экспорт посещаемости CSV</button>
+          </div>
+        </div>
+
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <h3>Ежемесячный аналитический отчёт</h3>
+              <p>Используй для дипломной демонстрации</p>
+            </div>
+          </div>
+          <div id="monthlyReportOutput" class="report-output"></div>
+        </article>
+      </section>
+
+      <section id="settingsSection" class="page-section">
+        <div class="settings-grid">
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <h3>Управление данными</h3>
+                <p>Локальное хранилище браузера</p>
+              </div>
+            </div>
+            <div class="settings-actions">
+              <button class="primary-btn" id="backupDataBtn">Скачать резервную копию JSON</button>
+              <button class="secondary-btn" id="restoreDataBtn">Восстановить из JSON</button>
+              <input type="file" id="restoreFileInput" hidden accept="application/json" />
+              <button class="danger-btn" id="resetAllDataBtn">Очистить все данные</button>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <h3>О проекте</h3>
+                <p>Версия для дипломной работы</p>
+              </div>
+            </div>
+            <div class="about-project">
+              <p><strong>Название:</strong> Optima Staff Analytics</p>
+              <p><strong>Назначение:</strong> Мониторинг рабочего времени, посещаемости, опозданий, часов, отделов и филиалов.</p>
+              <p><strong>Технологии:</strong> HTML, CSS, JavaScript, LocalStorage.</p>
+              <p><strong>Дальнейшее развитие:</strong> Node.js / Express / PHP + SQL сервер, роли пользователей, авторизация и API.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal hidden" id="employeeModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="employeeModalTitle">Добавить сотрудника</h3>
+        <button class="icon-btn" data-close="employeeModal">×</button>
+      </div>
+      <form id="employeeForm" class="form-grid">
+        <input type="hidden" id="employeeId" />
+        <label>
+          ФИО
+          <input type="text" id="employeeName" required />
+        </label>
+        <label>
+          Должность
+          <input type="text" id="employeeRole" required />
+        </label>
+        <label>
+          Отдел
+          <input type="text" id="employeeDepartment" required />
+        </label>
+        <label>
+          Филиал
+          <input type="text" id="employeeBranch" required />
+        </label>
+        <label>
+          Начало смены
+          <input type="time" id="employeeShiftStart" required />
+        </label>
+        <label>
+          Конец смены
+          <input type="time" id="employeeShiftEnd" required />
+        </label>
+        <label>
+          Статус
+          <select id="employeeStatus" required>
+            <option value="Active">Активен</option>
+            <option value="Remote">Удалённо</option>
+            <option value="Vacation">Отпуск</option>
+            <option value="Suspended">Приостановлен</option>
+          </select>
+        </label>
+        <label>
+          Email
+          <input type="email" id="employeeEmail" required />
+        </label>
+        <label class="full-width">
+          Комментарий
+          <textarea id="employeeNote" rows="3" placeholder="Например: работает в головном офисе, сменный график и т.д."></textarea>
+        </label>
+        <div class="modal-actions full-width">
+          <button type="button" class="secondary-btn" data-close="employeeModal">Отмена</button>
+          <button type="submit" class="primary-btn">Сохранить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="attendanceModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Добавить отметку посещаемости</h3>
+        <button class="icon-btn" data-close="attendanceModal">×</button>
+      </div>
+      <form id="attendanceForm" class="form-grid">
+        <input type="hidden" id="attendanceId" />
+        <label>
+          Сотрудник
+          <select id="attendanceEmployee" required></select>
+        </label>
+        <label>
+          Дата
+          <input type="date" id="attendanceDate" required />
+        </label>
+        <label>
+          Вход
+          <input type="time" id="attendanceCheckIn" />
+        </label>
+        <label>
+          Выход
+          <input type="time" id="attendanceCheckOut" />
+        </label>
+        <label>
+          Перерыв, мин.
+          <input type="number" id="attendanceBreak" min="0" value="60" />
+        </label>
+        <label>
+          Статус
+          <select id="attendanceStatus" required>
+            <option value="Present">Присутствовал</option>
+            <option value="Late">Опоздал</option>
+            <option value="Remote">Удалённо</option>
+            <option value="Absent">Отсутствовал</option>
+            <option value="Sick">Больничный</option>
+            <option value="Vacation">Отпуск</option>
+          </select>
+        </label>
+        <label class="full-width">
+          Примечание
+          <textarea id="attendanceNote" rows="3" placeholder="Причина отсутствия, переработка, комментарий руководителя"></textarea>
+        </label>
+        <div class="modal-actions full-width">
+          <button type="button" class="secondary-btn" data-close="attendanceModal">Отмена</button>
+          <button type="submit" class="primary-btn">Сохранить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
