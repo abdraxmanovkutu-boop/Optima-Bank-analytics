@@ -1,8 +1,11 @@
-const STORAGE_KEY = 'optima_staff_analytics_v1';
+const STORAGE_KEY = 'optima_staff_analytics_v2';
 
 const state = {
   employees: [],
   attendance: [],
+  jobHistory: [],
+  operations: [],
+  credits: [],
   ui: {
     activeSection: 'dashboardSection',
     search: '',
@@ -69,6 +72,13 @@ const els = {
   seedDemoPrimaryBtn: document.getElementById('seedDemoPrimaryBtn'),
   hoursChart: document.getElementById('hoursChart'),
   analyticsChart: document.getElementById('analyticsChart'),
+  jobHistoryTable: document.getElementById('jobHistoryTable'),
+  operationsTable: document.getElementById('operationsTable'),
+  creditKpis: document.getElementById('creditKpis'),
+  creditAmountChart: document.getElementById('creditAmountChart'),
+  creditOfficerChart: document.getElementById('creditOfficerChart'),
+  recentClientTable: document.getElementById('recentClientTable'),
+  creditSummaryList: document.getElementById('creditSummaryList'),
 };
 
 function uid(prefix = 'id') {
@@ -79,6 +89,9 @@ function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({
     employees: state.employees,
     attendance: state.attendance,
+    jobHistory: state.jobHistory,
+    operations: state.operations,
+    credits: state.credits,
   }));
 }
 
@@ -91,8 +104,11 @@ function loadState() {
 
   try {
     const parsed = JSON.parse(raw);
-    state.employees = parsed.employees || [];
+   state.employees = parsed.employees || [];
     state.attendance = parsed.attendance || [];
+    state.jobHistory = parsed.jobHistory || [];
+    state.operations = parsed.operations || [];
+    state.credits = parsed.credits || [];
   } catch (error) {
     console.error('Ошибка чтения localStorage:', error);
     seedDemoData();
@@ -171,8 +187,51 @@ function seedDemoData() {
     });
   }
 
+  const jobHistory = [
+    { employeeId: 'EMP-001', organization: 'Optima Bank (демо)', department: 'Кредитный отдел', role: 'Кредитный менеджер', startDate: '2021-02', endDate: 'Настоящее время', responsibilities: 'Консультации по кредитам, анализ документов, сопровождение клиента' },
+    { employeeId: 'EMP-002', organization: 'Optima Risk Center (демо)', department: 'Риск-менеджмент', role: 'Специалист по рискам', startDate: '2020-08', endDate: 'Настоящее время', responsibilities: 'Оценка кредитоспособности, скоринг, анализ просрочки' },
+    { employeeId: 'EMP-003', organization: 'Optima Bank (демо)', department: 'Операционный отдел', role: 'Операционист', startDate: '2022-01', endDate: 'Настоящее время', responsibilities: 'Работа с клиентскими операциями и платежами' },
+    { employeeId: 'EMP-004', organization: 'Optima HR Service (демо)', department: 'HR', role: 'HR-менеджер', startDate: '2021-05', endDate: 'Настоящее время', responsibilities: 'Кадровый мониторинг, табель, история сотрудников' },
+    { employeeId: 'EMP-005', organization: 'Optima Finance Unit (демо)', department: 'Финансовый отдел', role: 'Финансовый аналитик', startDate: '2019-10', endDate: 'Настоящее время', responsibilities: 'Финансовая аналитика, отчёты, внутренние KPI' },
+    { employeeId: 'EMP-006', organization: 'Optima Branch Karakol (демо)', department: 'Кассовый отдел', role: 'Кассир', startDate: '2023-03', endDate: 'Настоящее время', responsibilities: 'Приём платежей, кассовые операции, обслуживание клиентов' },
+    { employeeId: 'EMP-007', organization: 'Optima Digital (демо)', department: 'IT', role: 'IT-администратор', startDate: '2020-01', endDate: 'Настоящее время', responsibilities: 'Поддержка рабочих мест, внутренней сети и сервисов' },
+    { employeeId: 'EMP-009', organization: 'Optima Retail Sales (демо)', department: 'Розничный бизнес', role: 'Менеджер по продажам', startDate: '2022-06', endDate: 'Настоящее время', responsibilities: 'Продажа кредитных и депозитных продуктов' },
+    { employeeId: 'EMP-010', organization: 'Optima Legal Service (демо)', department: 'Юридический отдел', role: 'Юрист', startDate: '2021-11', endDate: 'Настоящее время', responsibilities: 'Проверка договоров и юридическое сопровождение' },
+    { employeeId: 'EMP-012', organization: 'Optima Digital Banking (демо)', department: 'Digital Banking', role: 'Системный аналитик', startDate: '2023-02', endDate: 'Настоящее время', responsibilities: 'Разработка цифровых банковских процессов' }
+  ];
+
+  const operations = [
+    { employeeId: 'EMP-001', date: '2026-04-05', organization: 'Optima Bank (демо)', operationType: 'Оформление потребительского кредита', clientInteractions: 6, amountSom: 850000, result: '3 договора одобрены' },
+    { employeeId: 'EMP-001', date: '2026-04-08', organization: 'Optima Bank (демо)', operationType: 'Консультации по рефинансированию', clientInteractions: 9, amountSom: 1200000, result: 'Подано 4 заявки' },
+    { employeeId: 'EMP-002', date: '2026-04-10', organization: 'Optima Risk Center (демо)', operationType: 'Проверка кредитного скоринга', clientInteractions: 12, amountSom: 2700000, result: 'Оценено 12 заявок' },
+    { employeeId: 'EMP-003', date: '2026-04-11', organization: 'Optima Bank (демо)', operationType: 'Внутренние расчётные операции', clientInteractions: 18, amountSom: 560000, result: 'Все операции завершены' },
+    { employeeId: 'EMP-005', date: '2026-04-12', organization: 'Optima Finance Unit (демо)', operationType: 'Подготовка отчёта по кредитному портфелю', clientInteractions: 0, amountSom: 6300000, result: 'Отчёт передан руководству' },
+    { employeeId: 'EMP-006', date: '2026-04-13', organization: 'Optima Branch Karakol (демо)', operationType: 'Кассовое сопровождение клиентов', clientInteractions: 21, amountSom: 420000, result: '21 клиент обслужен' },
+    { employeeId: 'EMP-009', date: '2026-04-14', organization: 'Optima Retail Sales (демо)', operationType: 'Продажа банковских продуктов', clientInteractions: 14, amountSom: 980000, result: '5 клиентов подали заявки' },
+    { employeeId: 'EMP-010', date: '2026-04-15', organization: 'Optima Legal Service (демо)', operationType: 'Проверка кредитных договоров', clientInteractions: 7, amountSom: 2100000, result: '7 договоров согласовано' },
+    { employeeId: 'EMP-012', date: '2026-04-16', organization: 'Optima Digital Banking (демо)', operationType: 'Анализ цифровых заявок', clientInteractions: 24, amountSom: 3100000, result: '24 онлайн-заявки обработаны' }
+  ];
+
+  const credits = [
+    { clientName: 'Азамат Т.', clientCode: 'CL-101', officerId: 'EMP-001', product: 'Потребительский кредит', amountSom: 250000, status: 'Approved', month: '2026-01', branch: 'Бишкек — Головной офис', historyStatus: 'Хорошая', riskLevel: 'Низкий' },
+    { clientName: 'Алина К.', clientCode: 'CL-102', officerId: 'EMP-001', product: 'Автокредит', amountSom: 780000, status: 'Approved', month: '2026-01', branch: 'Бишкек — Головной офис', historyStatus: 'Хорошая', riskLevel: 'Средний' },
+    { clientName: 'Бекзат А.', clientCode: 'CL-103', officerId: 'EMP-009', product: 'Ипотека', amountSom: 3200000, status: 'Pending', month: '2026-02', branch: 'Джалал-Абад — Филиал', historyStatus: 'Средняя', riskLevel: 'Средний' },
+    { clientName: 'Нурзат Ж.', clientCode: 'CL-104', officerId: 'EMP-001', product: 'Потребительский кредит', amountSom: 180000, status: 'Approved', month: '2026-02', branch: 'Бишкек — Головной офис', historyStatus: 'Хорошая', riskLevel: 'Низкий' },
+    { clientName: 'Руслан М.', clientCode: 'CL-105', officerId: 'EMP-009', product: 'Бизнес-кредит', amountSom: 1450000, status: 'Rejected', month: '2026-02', branch: 'Джалал-Абад — Филиал', historyStatus: 'Проблемная', riskLevel: 'Высокий' },
+    { clientName: 'Камила С.', clientCode: 'CL-106', officerId: 'EMP-001', product: 'Рефинансирование', amountSom: 640000, status: 'Approved', month: '2026-03', branch: 'Бишкек — Головной офис', historyStatus: 'Хорошая', riskLevel: 'Низкий' },
+    { clientName: 'Эрлан Б.', clientCode: 'CL-107', officerId: 'EMP-009', product: 'Потребительский кредит', amountSom: 300000, status: 'Approved', month: '2026-03', branch: 'Джалал-Абад — Филиал', historyStatus: 'Средняя', riskLevel: 'Средний' },
+    { clientName: 'Мээрим Д.', clientCode: 'CL-108', officerId: 'EMP-001', product: 'Ипотека', amountSom: 4100000, status: 'Approved', month: '2026-03', branch: 'Бишкек — Головной офис', historyStatus: 'Хорошая', riskLevel: 'Средний' },
+    { clientName: 'Ильгиз К.', clientCode: 'CL-109', officerId: 'EMP-009', product: 'Автокредит', amountSom: 950000, status: 'Closed', month: '2026-03', branch: 'Джалал-Абад — Филиал', historyStatus: 'Хорошая', riskLevel: 'Низкий' },
+    { clientName: 'Аделина Н.', clientCode: 'CL-110', officerId: 'EMP-001', product: 'Потребительский кредит', amountSom: 220000, status: 'Approved', month: '2026-04', branch: 'Бишкек — Головной офис', historyStatus: 'Средняя', riskLevel: 'Средний' },
+    { clientName: 'Таалай О.', clientCode: 'CL-111', officerId: 'EMP-009', product: 'Бизнес-кредит', amountSom: 2700000, status: 'Approved', month: '2026-04', branch: 'Джалал-Абад — Филиал', historyStatus: 'Хорошая', riskLevel: 'Средний' },
+    { clientName: 'Сезим П.', clientCode: 'CL-112', officerId: 'EMP-001', product: 'Рефинансирование', amountSom: 530000, status: 'Pending', month: '2026-04', branch: 'Бишкек — Головной офис', historyStatus: 'Средняя', riskLevel: 'Средний' }
+  ];
+
   state.employees = employees;
   state.attendance = attendance;
+  state.jobHistory = jobHistory;
+  state.operations = operations;
+  state.credits = credits;
   saveState();
 }
 
@@ -255,13 +314,15 @@ function switchSection(sectionId) {
   els.navLinks.forEach((link) => link.classList.toggle('active', link.dataset.section === sectionId));
 
   const titles = {
-    dashboardSection: 'Панель управления',
-    employeesSection: 'Сотрудники',
-    attendanceSection: 'Посещение и рабочее время',
-    analyticsSection: 'Аналитика',
-    reportsSection: 'Отчёты',
-    settingsSection: 'Настройки',
-  };
+  dashboardSection: 'Панель управления',
+  employeesSection: 'Сотрудники',
+  attendanceSection: 'Посещение и рабочее время',
+  analyticsSection: 'Аналитика',
+  reportsSection: 'Отчёты',
+  historySection: 'История сотрудников',
+  creditsSection: 'Кредиты',
+  settingsSection: 'Настройки',
+};
   els.pageTitle.textContent = titles[sectionId] || 'Панель';
 }
 
@@ -810,8 +871,12 @@ function downloadBackup() {
   download('optima_staff_backup.json', JSON.stringify({
     employees: state.employees,
     attendance: state.attendance,
+    jobHistory: state.jobHistory,
+    operations: state.operations,
+    credits: state.credits,
   }, null, 2), 'application/json');
 }
+
 
 function restoreFromJsonFile(file) {
   const reader = new FileReader();
@@ -820,6 +885,9 @@ function restoreFromJsonFile(file) {
       const parsed = JSON.parse(event.target.result);
       state.employees = Array.isArray(parsed.employees) ? parsed.employees : [];
       state.attendance = Array.isArray(parsed.attendance) ? parsed.attendance : [];
+      state.jobHistory = Array.isArray(parsed.jobHistory) ? parsed.jobHistory : [];
+      state.operations = Array.isArray(parsed.operations) ? parsed.operations : [];
+      state.credits = Array.isArray(parsed.credits) ? parsed.credits : [];
       saveState();
       refreshUI();
       alert('Данные успешно восстановлены.');
@@ -966,6 +1034,267 @@ window.removeEmployee = removeEmployee;
 window.editAttendance = editAttendance;
 window.removeAttendance = removeAttendance;
 
+function formatMoney(value) {
+  return new Intl.NumberFormat('ru-RU').format(Number(value || 0)) + ' сом';
+}
+
+function creditStatusClass(status) {
+  const map = {
+    Approved: 'approved',
+    Pending: 'pending',
+    Rejected: 'rejected',
+    Closed: 'closed',
+  };
+  return map[status] || 'pending';
+}
+
+function creditStatusLabel(status) {
+  const map = {
+    Approved: 'Одобрено',
+    Pending: 'На рассмотрении',
+    Rejected: 'Отказ',
+    Closed: 'Закрыт',
+  };
+  return map[status] || status;
+}
+
+function drawBarChart(canvas, labels, values, color = '#b51520') {
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width;
+  const height = canvas.height;
+  ctx.clearRect(0, 0, width, height);
+
+  const padding = { top: 25, right: 20, bottom: 60, left: 70 };
+  const chartW = width - padding.left - padding.right;
+  const chartH = height - padding.top - padding.bottom;
+  const maxValue = Math.max(...values, 1);
+
+  ctx.font = '12px Inter';
+  ctx.strokeStyle = '#edf0f4';
+  ctx.fillStyle = '#7b818c';
+  ctx.lineWidth = 1;
+
+  for (let i = 0; i <= 5; i += 1) {
+    const y = padding.top + (chartH / 5) * i;
+    ctx.beginPath();
+    ctx.moveTo(padding.left, y);
+    ctx.lineTo(width - padding.right, y);
+    ctx.stroke();
+
+    const value = Math.round(maxValue - (maxValue / 5) * i);
+    ctx.fillText(String(value), 16, y + 4);
+  }
+
+  if (!labels.length) return;
+
+  const slot = chartW / labels.length;
+  const barWidth = slot * 0.58;
+
+  labels.forEach((label, index) => {
+    const value = values[index];
+    const barHeight = (value / maxValue) * chartH;
+    const x = padding.left + slot * index + (slot - barWidth) / 2;
+    const y = padding.top + chartH - barHeight;
+
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, barWidth, barHeight);
+
+    ctx.fillStyle = '#68707d';
+    ctx.fillText(label, x - 4, height - 22);
+  });
+}
+
+function renderEmployeeHistorySection() {
+  if (!els.jobHistoryTable || !els.operationsTable) return;
+
+  state.jobHistory = Array.isArray(state.jobHistory) ? state.jobHistory : [];
+  state.operations = Array.isArray(state.operations) ? state.operations : [];
+
+  if (state.jobHistory.length) {
+    els.jobHistoryTable.innerHTML = state.jobHistory.map((item) => {
+      const employee = getEmployeeById(item.employeeId);
+      return `
+        <tr>
+          <td>${safeText(employee?.name || '—')}</td>
+          <td>${safeText(item.organization)}</td>
+          <td>${safeText(item.department)}</td>
+          <td>${safeText(item.role)}</td>
+          <td>${safeText(item.startDate)} — ${safeText(item.endDate)}</td>
+          <td>${safeText(item.responsibilities)}</td>
+        </tr>
+      `;
+    }).join('');
+  } else {
+    els.jobHistoryTable.innerHTML = `
+      <tr>
+        <td colspan="6">
+          <div class="empty-state">Нет данных по истории сотрудников</div>
+        </td>
+      </tr>
+    `;
+  }
+
+  if (state.operations.length) {
+    els.operationsTable.innerHTML = state.operations.map((item) => {
+      const employee = getEmployeeById(item.employeeId);
+      return `
+        <tr>
+          <td>${safeText(employee?.name || '—')}</td>
+          <td>${safeText(item.date)}</td>
+          <td>${safeText(item.organization)}</td>
+          <td>${safeText(item.operationType)}</td>
+          <td>${safeText(item.clientInteractions)}</td>
+          <td><span class="money-value">${formatMoney(item.amountSom)}</span></td>
+          <td>${safeText(item.result)}</td>
+        </tr>
+      `;
+    }).join('');
+  } else {
+    els.operationsTable.innerHTML = `
+      <tr>
+        <td colspan="7">
+          <div class="empty-state">Нет данных по операциям</div>
+        </td>
+      </tr>
+    `;
+  }
+}
+
+function renderCreditsSection() {
+  if (!els.creditKpis || !els.creditAmountChart || !els.creditOfficerChart || !els.recentClientTable || !els.creditSummaryList) return;
+
+  state.credits = Array.isArray(state.credits) ? state.credits : [];
+
+  const uniqueClients = new Set(state.credits.map((item) => item.clientCode)).size;
+  const approvedCredits = state.credits.filter((item) => item.status === 'Approved');
+  const approvedCount = approvedCredits.length;
+  const approvedSum = approvedCredits.reduce((sum, item) => sum + item.amountSom, 0);
+  const averageCredit = approvedCount ? approvedSum / approvedCount : 0;
+  const totalInteractions = state.operations.reduce((sum, item) => sum + Number(item.clientInteractions || 0), 0);
+
+  els.creditKpis.innerHTML = `
+    <div class="mini-metric-card">
+      <div class="label">Клиентов в системе</div>
+      <div class="value">${uniqueClients}</div>
+      <div class="desc">Уникальные клиенты по кредитным заявкам</div>
+    </div>
+    <div class="mini-metric-card">
+      <div class="label">Одобренные кредиты</div>
+      <div class="value">${approvedCount}</div>
+      <div class="desc">Количество одобренных заявок</div>
+    </div>
+    <div class="mini-metric-card">
+      <div class="label">Сумма одобренных</div>
+      <div class="value">${formatMoney(approvedSum)}</div>
+      <div class="desc">Общий объём выданных кредитов</div>
+    </div>
+    <div class="mini-metric-card">
+      <div class="label">Средний кредит</div>
+      <div class="value">${formatMoney(averageCredit)}</div>
+      <div class="desc">Средняя сумма одного кредита</div>
+    </div>
+    <div class="mini-metric-card">
+      <div class="label">Взаимодействия</div>
+      <div class="value">${totalInteractions}</div>
+      <div class="desc">Контакты сотрудников с клиентами</div>
+    </div>
+  `;
+
+  const monthMap = new Map();
+  approvedCredits.forEach((item) => {
+    monthMap.set(item.month, (monthMap.get(item.month) || 0) + item.amountSom);
+  });
+
+  const monthLabels = [...monthMap.keys()].sort();
+  const monthValues = monthLabels.map((label) => Math.round((monthMap.get(label) || 0) / 1000));
+  drawBarChart(els.creditAmountChart, monthLabels.map((m) => m.slice(5)), monthValues, '#b51520');
+
+  const officerMap = new Map();
+  approvedCredits.forEach((item) => {
+    officerMap.set(item.officerId, (officerMap.get(item.officerId) || 0) + 1);
+  });
+
+  const officerRows = [...officerMap.entries()]
+    .map(([employeeId, count]) => ({
+      name: getEmployeeById(employeeId)?.name || employeeId,
+      count,
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  drawBarChart(
+    els.creditOfficerChart,
+    officerRows.map((row) => row.name.split(' ')[0]),
+    officerRows.map((row) => row.count),
+    '#1b4bb3'
+  );
+
+  els.recentClientTable.innerHTML = state.credits.length
+    ? [...state.credits].reverse().slice(0, 8).map((item) => {
+        const officer = getEmployeeById(item.officerId);
+        return `
+          <tr>
+            <td>${safeText(item.clientName)}</td>
+            <td>${safeText(officer?.name || '—')}</td>
+            <td>${safeText(item.product)}</td>
+            <td><span class="money-value">${formatMoney(item.amountSom)}</span></td>
+            <td><span class="credit-pill ${creditStatusClass(item.status)}">${creditStatusLabel(item.status)}</span></td>
+            <td><span class="history-badge">${safeText(item.historyStatus)}</span></td>
+          </tr>
+        `;
+      }).join('')
+    : `
+      <tr>
+        <td colspan="6">
+          <div class="empty-state">Нет данных по кредитам</div>
+        </td>
+      </tr>
+    `;
+
+  const productMap = new Map();
+  state.credits.forEach((item) => {
+    if (!productMap.has(item.product)) {
+      productMap.set(item.product, { count: 0, sum: 0 });
+    }
+    const product = productMap.get(item.product);
+    product.count += 1;
+    product.sum += item.amountSom;
+  });
+
+  const riskMap = new Map();
+  state.credits.forEach((item) => {
+    riskMap.set(item.riskLevel, (riskMap.get(item.riskLevel) || 0) + 1);
+  });
+
+  const maxProductSum = Math.max(1, ...[...productMap.values()].map((item) => item.sum));
+
+  const productSummary = [...productMap.entries()]
+    .sort((a, b) => b[1].sum - a[1].sum)
+    .map(([product, data]) => `
+      <div class="stack-item">
+        <div class="stack-head">
+          <strong>${safeText(product)}</strong>
+          <span>${data.count} заявок</span>
+        </div>
+        <div>Общая сумма: ${formatMoney(data.sum)}</div>
+        <div class="progress-line">
+          <span style="width:${Math.min(100, (data.sum / maxProductSum) * 100)}%"></span>
+        </div>
+      </div>
+    `).join('');
+
+  const riskSummary = [...riskMap.entries()]
+    .map(([risk, count]) => `
+      <div class="stack-item">
+        <div class="stack-head">
+          <strong>Риск: ${safeText(risk)}</strong>
+          <span>${count}</span>
+        </div>
+      </div>
+    `).join('');
+
+  els.creditSummaryList.innerHTML = productSummary + riskSummary;
+}
 function refreshUI() {
   renderEmployeeFilters();
   renderAttendanceFilters();
@@ -976,6 +1305,8 @@ function refreshUI() {
   renderDepartmentPerformance();
   drawDashboardCharts();
   renderAnalytics();
+  renderEmployeeHistorySection();
+  renderCreditsSection();
   generateMonthlyReport();
 }
 

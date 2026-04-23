@@ -695,3 +695,92 @@ canvas {
     padding: 18px;
   }
 }
+.mini-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.mini-metric-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
+  border: 1px solid #edf0f4;
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.mini-metric-card .label {
+  font-size: 13px;
+  color: #6e7683;
+  margin-bottom: 10px;
+}
+
+.mini-metric-card .value {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1c2430;
+  margin-bottom: 8px;
+}
+
+.mini-metric-card .desc {
+  font-size: 12px;
+  color: #7f8793;
+  line-height: 1.5;
+}
+
+.credit-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 96px;
+}
+
+.credit-pill.approved {
+  background: rgba(17, 138, 89, 0.12);
+  color: #118a59;
+}
+
+.credit-pill.pending {
+  background: rgba(196, 106, 0, 0.12);
+  color: #c46a00;
+}
+
+.credit-pill.rejected {
+  background: rgba(194, 46, 46, 0.12);
+  color: #c22e2e;
+}
+
+.credit-pill.closed {
+  background: rgba(43, 101, 219, 0.12);
+  color: #2b65db;
+}
+
+.history-badge {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(27, 75, 179, 0.10);
+  color: #1b4bb3;
+}
+
+.money-value {
+  font-weight: 700;
+  color: #b51520;
+}
+
+@media (max-width: 900px) {
+  .mini-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .mini-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}

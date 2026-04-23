@@ -26,7 +26,10 @@
         <button class="nav-link" data-section="attendanceSection">Посещение</button>
         <button class="nav-link" data-section="analyticsSection">Аналитика</button>
         <button class="nav-link" data-section="reportsSection">Отчёты</button>
+        <button class="nav-link" data-section="historySection">История сотрудников</button>
+        <button class="nav-link" data-section="creditsSection">Кредиты</button>
         <button class="nav-link" data-section="settingsSection">Настройки</button>
+        
       </nav>
 
       <div class="sidebar-footer glass-card">
@@ -274,7 +277,135 @@
           <div id="monthlyReportOutput" class="report-output"></div>
         </article>
       </section>
+       <section id="historySection" class="page-section">
+  <div class="analytics-grid">
+    <article class="card wide-card">
+      <div class="card-header">
+        <div>
+          <h3>История работы сотрудников</h3>
+          <p>Организации, отделы, должности, перемещения и операции</p>
+        </div>
+      </div>
+    </article>
 
+    <article class="card">
+      <div class="card-header">
+        <div>
+          <h3>История работы сотрудников</h3>
+          <p>Где работал сотрудник и в каком отделе</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Сотрудник</th>
+              <th>Организация</th>
+              <th>Отдел</th>
+              <th>Должность</th>
+              <th>Период</th>
+              <th>Обязанности</th>
+            </tr>
+          </thead>
+          <tbody id="jobHistoryTable"></tbody>
+        </table>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-header">
+        <div>
+          <h3>Операции сотрудников</h3>
+          <p>Какие действия выполнял сотрудник</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Сотрудник</th>
+              <th>Дата</th>
+              <th>Организация</th>
+              <th>Операция</th>
+              <th>Клиенты</th>
+              <th>Сумма</th>
+              <th>Результат</th>
+            </tr>
+          </thead>
+          <tbody id="operationsTable"></tbody>
+        </table>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section id="creditsSection" class="page-section">
+  <div class="analytics-grid">
+    <article class="card wide-card">
+      <div class="card-header">
+        <div>
+          <h3>Кредитный отдел и клиентская аналитика</h3>
+          <p>Кредиты, суммы, диаграммы и кредитная история</p>
+        </div>
+      </div>
+      <div id="creditKpis" class="mini-metrics-grid"></div>
+    </article>
+
+    <article class="card chart-card">
+      <div class="card-header">
+        <div>
+          <h3>Сумма выданных кредитов по месяцам</h3>
+          <p>Диаграмма по одобренным кредитам</p>
+        </div>
+      </div>
+      <canvas id="creditAmountChart" width="1200" height="320"></canvas>
+    </article>
+
+    <article class="card chart-card">
+      <div class="card-header">
+        <div>
+          <h3>Одобренные кредиты по сотрудникам</h3>
+          <p>Кто оформил больше заявок</p>
+        </div>
+      </div>
+      <canvas id="creditOfficerChart" width="1200" height="320"></canvas>
+    </article>
+
+    <article class="card">
+      <div class="card-header">
+        <div>
+          <h3>Последние кредитные заявки</h3>
+          <p>Клиенты, суммы, статусы и история</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Клиент</th>
+              <th>Менеджер</th>
+              <th>Продукт</th>
+              <th>Сумма</th>
+              <th>Статус</th>
+              <th>Кредитная история</th>
+            </tr>
+          </thead>
+          <tbody id="recentClientTable"></tbody>
+        </table>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-header">
+        <div>
+          <h3>Сводка по кредитному портфелю</h3>
+          <p>Продукты, риски и аналитика</p>
+        </div>
+      </div>
+      <div id="creditSummaryList" class="stack-list"></div>
+    </article>
+  </div>
+</section>
       <section id="settingsSection" class="page-section">
         <div class="settings-grid">
           <article class="card">
