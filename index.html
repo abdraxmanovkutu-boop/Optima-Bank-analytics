@@ -25,9 +25,10 @@
         <button class="nav-link" data-section="employeesSection">Сотрудники</button>
         <button class="nav-link" data-section="attendanceSection">Посещение</button>
         <button class="nav-link" data-section="analyticsSection">Аналитика</button>
-        <button class="nav-link" data-section="reportsSection">Отчёты</button>
+
         <button class="nav-link" data-section="historySection">История сотрудников</button>
         <button class="nav-link" data-section="creditsSection">Кредиты</button>
+        <button class="nav-link" data-section="reportsSection">Отчёты</button>
         <button class="nav-link" data-section="settingsSection">Настройки</button>
         
       </nav>
@@ -232,7 +233,8 @@
             </div>
             <canvas id="analyticsChart" width="1200" height="350"></canvas>
           </article>
-
+        </div>
+        <div class="leaders-grid">
           <article class="card">
             <div class="card-header">
               <div>
@@ -241,6 +243,17 @@
               </div>
             </div>
             <div id="topEmployeesList" class="stack-list"></div>
+            <div class="round-chart-box">
+  <div class="round-chart-header">
+    <h4>Круговая диаграмма</h4>
+    <span>Доля часов топ-5 сотрудников</span>
+  </div>
+
+  <div class="round-chart-layout">
+    <canvas id="topEmployeesDonut" width="220" height="220"></canvas>
+    <div id="topEmployeesLegend" class="round-chart-legend"></div>
+  </div>
+</div>
           </article>
 
           <article class="card">
@@ -251,8 +264,19 @@
               </div>
             </div>
             <div id="topBranchesList" class="stack-list"></div>
+            <div class="round-chart-box">
+  <div class="round-chart-header">
+    <h4>Круговая диаграмма</h4>
+    <span>Доля дисциплины по филиалам</span>
+  </div>
+
+  <div class="round-chart-layout">
+    <canvas id="topBranchesDonut" width="220" height="220"></canvas>
+    <div id="topBranchesLegend" class="round-chart-legend"></div>
+  </div>
+</div>
           </article>
-        </div>
+          
       </section>
 
       <section id="reportsSection" class="page-section">
@@ -286,7 +310,7 @@
           <p>Организации, отделы, должности, перемещения и операции</p>
         </div>
       </div>
-    </article>
+    </article> 
 
     <article class="card">
       <div class="card-header">
@@ -351,7 +375,7 @@
       <div id="creditKpis" class="mini-metrics-grid"></div>
     </article>
 
-    <article class="card chart-card">
+    <article class="card chart-card wide-card">
       <div class="card-header">
         <div>
           <h3>Сумма выданных кредитов по месяцам</h3>
@@ -361,7 +385,7 @@
       <canvas id="creditAmountChart" width="1200" height="320"></canvas>
     </article>
 
-    <article class="card chart-card">
+    <article class="card chart-card wide-card">
       <div class="card-header">
         <div>
           <h3>Одобренные кредиты по сотрудникам</h3>

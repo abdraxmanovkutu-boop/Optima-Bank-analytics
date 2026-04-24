@@ -79,6 +79,10 @@ const els = {
   creditOfficerChart: document.getElementById('creditOfficerChart'),
   recentClientTable: document.getElementById('recentClientTable'),
   creditSummaryList: document.getElementById('creditSummaryList'),
+  topEmployeesDonut: document.getElementById('topEmployeesDonut'),
+  topEmployeesLegend: document.getElementById('topEmployeesLegend'),
+  topBranchesDonut: document.getElementById('topBranchesDonut'),
+  topBranchesLegend: document.getElementById('topBranchesLegend'),
 };
 
 function uid(prefix = 'id') {
@@ -292,6 +296,102 @@ function getTodayAttendance() {
   return state.attendance.filter((item) => item.date === today);
 }
 
+function getLatestAttendanceForEmployee(employeeId, today) {
+  return [...state.attendance]
+    .filter((item) => item.employeeId === employeeId && item.date < today)
+    .sort((a, b) => {
+      const first = b.date + (b.checkIn || '');
+      const second = a.date + (a.checkIn || '');
+      return first.localeCompare(second);
+    })[0] || null;
+}
+
+function createTodayAttendanceFromTemplate(employee, today) {
+  const lastRecord = getLatestAttendanceForEmployee(employee.id, today);
+
+  if (lastRecord) {
+    return {
+      id: uid('att'),
+      employeeId: employee.id,
+      date: today,
+      checkIn: lastRecord.checkIn || employee.shiftStart || '',
+      checkOut: lastRecord.checkOut || employee.shiftEnd || '',
+      breakMinutes: Number(lastRecord.breakMinutes || 60),
+      status: lastRecord.status || (employee.status === 'Remote' ? 'Remote' : 'Present'),
+      note: 'Автоматически создано на текущий день',
+    };
+  }
+
+  if (employee.status === 'Vacation') {
+    return {
+      id: uid('att'),
+      employeeId: employee.id,
+      date: today,
+      checkIn: '',
+      checkOut: '',
+      breakMinutes: 0,
+      status: 'Vacation',
+      note: 'Автоматически создано на текущий день',
+    };
+  }
+
+  if (employee.status === 'Remote') {
+    return {
+      id: uid('att'),
+      employeeId: employee.id,
+      date: today,
+      checkIn: employee.shiftStart || '09:00',
+      checkOut: employee.shiftEnd || '18:00',
+      breakMinutes: 60,
+      status: 'Remote',
+      note: 'Автоматически создано на текущий день',
+    };
+  }
+
+  if (employee.status === 'Suspended') {
+    return {
+      id: uid('att'),
+      employeeId: employee.id,
+      date: today,
+      checkIn: '',
+      checkOut: '',
+      breakMinutes: 0,
+      status: 'Absent',
+      note: 'Автоматически создано на текущий день',
+    };
+  }
+
+  return {
+    id: uid('att'),
+    employeeId: employee.id,
+    date: today,
+    checkIn: employee.shiftStart || '09:00',
+    checkOut: employee.shiftEnd || '18:00',
+    breakMinutes: 60,
+    status: 'Present',
+    note: 'Автоматически создано на текущий день',
+  };
+}
+
+function ensureTodayAttendance() {
+  const today = getTodayDate();
+  let added = false;
+
+  state.employees.forEach((employee) => {
+    const existsToday = state.attendance.some(
+      (item) => item.employeeId === employee.id && item.date === today
+    );
+
+    if (!existsToday) {
+      state.attendance.push(createTodayAttendanceFromTemplate(employee, today));
+      added = true;
+    }
+  });
+
+  if (added) {
+    saveState();
+  }
+}
 function safeText(text) {
   return String(text ?? '')
     .replace(/&/g, '&amp;')
@@ -1295,6 +1395,214 @@ function renderCreditsSection() {
 
   els.creditSummaryList.innerHTML = productSummary + riskSummary;
 }
+function getChartPalette() {
+  return [
+    '#e53935', // красный
+    '#1e88e5', // синий
+    '#43a047', // зелёный
+    '#fb8c00', // оранжевый
+    '#8e24aa', // фиолетовый
+    '#00acc1', // бирюзовый
+    '#fdd835', // жёлтый
+    '#6d4c41'  // коричневый
+  ];
+}
+
+function toMinutesFromTime(time) {
+  if (!time || !String(time).includes(':')) return 0;
+  const [hours, minutes] = String(time).split(':').map(Number);
+  return (hours * 60) + minutes;
+}
+
+function getAttendanceWorkedHours(item) {
+  const checkIn = toMinutesFromTime(item.checkIn);
+  const checkOut = toMinutesFromTime(item.checkOut);
+  const breakMinutes = Number(item.breakMinutes || item.break || 0);
+
+  if (!checkIn || !checkOut || checkOut <= checkIn) return 0;
+
+  const totalMinutes = Math.max(0, checkOut - checkIn - breakMinutes);
+  return totalMinutes / 60;
+}
+
+function drawDonutChart(canvas, items, centerValue, centerLabel) {
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width;
+  const height = canvas.height;
+  const cx = width / 2;
+  const cy = height / 2;
+  const radius = 92;
+  const lineWidth = 30;
+
+  ctx.clearRect(0, 0, width, height);
+
+  const total = items.reduce((sum, item) => sum + item.value, 0);
+
+  if (!items.length || total <= 0) {
+    ctx.beginPath();
+    ctx.strokeStyle = '#edf0f4';
+    ctx.lineWidth = lineWidth;
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.fillStyle = '#7a8392';
+    ctx.font = '700 18px Inter, Arial, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('0', cx, cy - 4);
+    ctx.font = '12px Inter, Arial, sans-serif';
+    ctx.fillText('Нет данных', cx, cy + 16);
+    return;
+  }
+
+  let startAngle = -Math.PI / 2;
+
+  items.forEach((item) => {
+    const sliceAngle = (item.value / total) * Math.PI * 2;
+
+    ctx.beginPath();
+    ctx.strokeStyle = item.color;
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = 'round';
+    ctx.arc(cx, cy, radius, startAngle, startAngle + sliceAngle);
+    ctx.stroke();
+
+    startAngle += sliceAngle;
+  });
+
+  ctx.beginPath();
+  ctx.fillStyle = '#ffffff';
+  ctx.arc(cx, cy, radius - (lineWidth / 2) - 10, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#1f2733';
+  ctx.textAlign = 'center';
+  ctx.font = '800 24px Inter, Arial, sans-serif';
+  ctx.fillText(centerValue, cx, cy - 2);
+
+  ctx.fillStyle = '#7a8392';
+  ctx.font = '12px Inter, Arial, sans-serif';
+  ctx.fillText(centerLabel, cx, cy + 18);
+}
+
+function renderDonutLegend(container, items, formatter) {
+  if (!container) return;
+
+  if (!items.length) {
+    container.innerHTML = '<div class="empty-state">Нет данных для диаграммы</div>';
+    return;
+  }
+
+  let html = '';
+
+  items.forEach((item) => {
+    html += '<div class="round-legend-item">';
+    html += '  <div class="round-legend-left">';
+    html += '    <span class="round-legend-dot" style="background:' + item.color + '"></span>';
+    html += '    <span class="round-legend-name">' + item.label + '</span>';
+    html += '  </div>';
+    html += '  <span class="round-legend-value">' + formatter(item.value) + '</span>';
+    html += '</div>';
+  });
+
+  container.innerHTML = html;
+}
+
+function renderRoundCharts() {
+  if (!state || !state.attendance || !state.employees) return;
+
+  const palette = getChartPalette();
+
+  const employeeHoursMap = new Map();
+
+  state.attendance.forEach((item) => {
+    const hours = getAttendanceWorkedHours(item);
+    const prev = employeeHoursMap.get(item.employeeId) || 0;
+    employeeHoursMap.set(item.employeeId, prev + hours);
+  });
+
+  const employeeTop = [...employeeHoursMap.entries()]
+    .map(([employeeId, hours]) => {
+      const employee = getEmployeeById(employeeId);
+      return {
+        label: employee?.name || employeeId,
+        value: Number(hours.toFixed(1)),
+      };
+    })
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 5)
+    .map((item, index) => ({
+      ...item,
+      color: palette[index % palette.length],
+    }));
+
+  drawDonutChart(
+    els.topEmployeesDonut,
+    employeeTop,
+    String(employeeTop.length),
+    'сотр.'
+  );
+
+  renderDonutLegend(
+    els.topEmployeesLegend,
+    employeeTop,
+    (value) => value.toFixed(1) + ' ч'
+  );
+
+  const branchMap = new Map();
+
+  state.attendance.forEach((item) => {
+    const employee = getEmployeeById(item.employeeId);
+    const branch = employee?.branch || 'Без филиала';
+
+    if (!branchMap.has(branch)) {
+      branchMap.set(branch, { total: 0, disciplined: 0 });
+    }
+
+    const row = branchMap.get(branch);
+    row.total += 1;
+
+    const status = String(item.status || '').toLowerCase();
+    const goodStatuses = ['present', 'remote', 'onsite', 'working'];
+    const goodStatusesRu = ['присутствовал', 'присутствие', 'удалённо', 'удаленно', 'на работе'];
+
+    if (goodStatuses.includes(status) || goodStatusesRu.includes(status)) {
+      row.disciplined += 1;
+    }
+  });
+
+  const branchTop = [...branchMap.entries()]
+    .map(([branch, data]) => {
+      const percent = data.total ? Math.round((data.disciplined / data.total) * 100) : 0;
+      return {
+        label: branch,
+        value: percent,
+      };
+    })
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 5)
+    .map((item, index) => ({
+      ...item,
+      color: palette[index % palette.length],
+    }));
+
+  const avgDiscipline = branchTop.length
+    ? Math.round(branchTop.reduce((sum, item) => sum + item.value, 0) / branchTop.length)
+    : 0;
+
+  drawDonutChart(
+    els.topBranchesDonut,
+    branchTop,
+    avgDiscipline+'%',
+    'дисциплина'
+  );
+
+  renderDonutLegend(
+    els.topBranchesLegend,
+    branchTop,
+    (value) => value + '%'
+  );
+}
 function refreshUI() {
   renderEmployeeFilters();
   renderAttendanceFilters();
@@ -1307,7 +1615,9 @@ function refreshUI() {
   renderAnalytics();
   renderEmployeeHistorySection();
   renderCreditsSection();
+  renderRoundCharts();
   generateMonthlyReport();
+  
 }
 
 function setDefaults() {
@@ -1397,6 +1707,7 @@ function attachEvents() {
 
 function init() {
   loadState();
+  ensureTodayAttendance();
   setDefaults();
   attachEvents();
   switchSection('dashboardSection');

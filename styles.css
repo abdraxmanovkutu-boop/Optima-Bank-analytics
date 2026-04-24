@@ -784,3 +784,276 @@ canvas {
     grid-template-columns: 1fr;
   }
 }
+#creditsSection .analytics-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+#creditsSection .card,
+#creditsSection .chart-card,
+#creditsSection .wide-card {
+  min-width: 0;
+}
+
+#creditsSection .wide-card {
+  grid-column: 1 / -1;
+}
+
+#creditsSection canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+#creditsSection .table-wrap {
+  overflow-x: auto;
+}
+
+@media (max-width: 900px) {
+  #creditsSection .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* История сотрудников — книжный вертикальный вид */
+#historySection .analytics-grid {
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+#historySection .card,
+#historySection .wide-card {
+  width: 100%;
+  min-width: 0;
+}
+
+#historySection .wide-card {
+  grid-column: 1 / -1;
+}
+
+#historySection .table-wrap {
+  overflow-x: auto;
+}
+
+#historySection table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+#historySection th,
+#historySection td {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  vertical-align: top;
+}
+.round-chart-box {
+  margin-top: 22px;
+  padding: 18px;
+  border: 1px solid #edf0f4;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #ffffff 0%, #fafbfd 100%);
+}
+
+.round-chart-header {
+  margin-bottom: 16px;
+}
+
+.round-chart-header h4 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #1f2733;
+}
+
+.round-chart-header span {
+  font-size: 13px;
+  color: #7a8392;
+}
+
+.round-chart-layout {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.round-chart-layout canvas {
+  width: 220px;
+  height: 220px;
+  flex: 0 0 auto;
+}
+
+.round-chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 1 220px;
+}
+
+.round-legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #f6f8fb;
+  border: 1px solid #edf0f4;
+}
+
+.round-legend-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.round-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex: 0 0 12px;
+}
+
+.round-legend-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2733;
+  line-height: 1.35;
+}
+
+.round-legend-value {
+  font-size: 14px;
+  font-weight: 800;
+  color: #b51520;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .round-chart-layout {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .round-chart-layout canvas {
+    width: 200px;
+    height: 200px;
+  }
+}
+/* Две широкие карточки без пустого места справа */
+.leaders-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  width: 100%;
+  align-items: start;
+}
+
+.leaders-grid > .card {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Чтобы вся секция занимала нормально ширину */
+#analyticsSection .analytics-grid,
+#dashboardSection .analytics-grid {
+  width: 100%;
+}
+
+#analyticsSection .card,
+#dashboardSection .card {
+  min-width: 0;
+}
+
+/* Круговые диаграммы — крупнее */
+.round-chart-box {
+  margin-top: 22px;
+  padding: 20px;
+  border: 1px solid #edf0f4;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #ffffff 0%, #fafbfd 100%);
+}
+
+.round-chart-layout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.round-chart-layout canvas {
+  width: 260px;
+  height: 260px;
+  flex: 0 0 260px;
+}
+
+.round-chart-legend {
+  flex: 1 1 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.round-legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #f7f9fc;
+  border: 1px solid #edf0f4;
+}
+
+.round-legend-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.round-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex: 0 0 12px;
+}
+
+.round-legend-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2733;
+  line-height: 1.35;
+}
+
+.round-legend-value {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1f2733;
+  white-space: nowrap;
+}
+
+/* Списки тоже сделаем шире и аккуратнее */
+.leaders-grid .stack-item,
+.leaders-grid .metric-list-item,
+.leaders-grid .top-item {
+  width: 100%;
+}
+
+/* Адаптив */
+@media (max-width: 1100px) {
+  .leaders-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .round-chart-layout {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .round-chart-layout canvas {
+    width: 230px;
+    height: 230px;
+    flex-basis: 230px;
+  }
+}
